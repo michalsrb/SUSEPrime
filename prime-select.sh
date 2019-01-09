@@ -10,6 +10,7 @@ type=$1
 
 xorg_nvidia_conf="/etc/prime/xorg-nvidia.conf"
 xorg_intel_conf="/etc/prime/xorg-intel.conf"
+prime_config="/etc/prime/config"
 
 function clean_files {
       rm -f /etc/X11/xorg.conf.d/90-nvidia.conf
@@ -27,6 +28,8 @@ case $type in
       update-alternatives --set libglx.so $libglx_nvidia
 
       cat $xorg_nvidia_conf | sed 's/PCI:X:X:X/'${nvidia_busid}'/' > /etc/X11/xorg.conf.d/90-nvidia.conf
+
+      echo $type > $prime_config
   ;;
   intel)
       clean_files
@@ -36,9 +39,14 @@ case $type in
       update-alternatives --set libglx.so $libglx_xorg
 
       cp $xorg_intel_conf /etc/X11/xorg.conf.d/90-intel.conf
+
+      echo $type > $prime_config
+  ;;
+  show)
+      cat $prime_config
   ;;
   *)
-      echo "prime-select nvidia|intel"
+      echo "prime-select nvidia|intel|show"
       exit
   ;;
 esac
